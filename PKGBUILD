@@ -113,6 +113,12 @@ package_nvidia-utils() {
     # X driver
     install -Dm755 nvidia_drv.so "${pkgdir}/usr/lib/xorg/modules/drivers/nvidia_drv.so"
 
+    # Xorg
+    install -D -m755 libnvidia-egl-xcb.so.1  -t "${pkgdir}/usr/lib"
+    install -D -m755 libnvidia-egl-xlib.so.1 -t "${pkgdir}/usr/lib"
+    install -D -m644 20_nvidia_xcb.json  -t "${pkgdir}/usr/share/egl/egl_external_platform.d"
+    install -D -m644 20_nvidia_xlib.json -t "${pkgdir}/usr/share/egl/egl_external_platform.d"
+
     # Wayland/GBM
     install -Dm755 libnvidia-egl-gbm.so.1* -t "${pkgdir}/usr/lib/"
     install -Dm644 15_nvidia_gbm.json "${pkgdir}/usr/share/egl/egl_external_platform.d/15_nvidia_gbm.json"
@@ -154,6 +160,11 @@ package_nvidia-utils() {
     # Vulkan ICD
     install -Dm644 "nvidia_icd.json" "${pkgdir}/usr/share/vulkan/icd.d/nvidia_icd.json"
     install -Dm644 "nvidia_layers.json" "${pkgdir}/usr/share/vulkan/implicit_layer.d/nvidia_layers.json"
+
+    # VulkanSC
+    install -D -m755 nvidia-pcc -t "${pkgdir}/usr/bin"
+    install -D -m755 "libnvidia-vksc-core.so.${pkgver}" -t "${pkgdir}/usr/lib"
+    install -D -m644 nvidia_icd_vksc.json -t "${pkgdir}/usr/share/vulkansc/icd.d"
 
     # VDPAU
     install -Dm755 "libvdpau_nvidia.so.${pkgver}" "${pkgdir}/usr/lib/vdpau/libvdpau_nvidia.so.${pkgver}"
