@@ -2,9 +2,10 @@
 # Maintainer: Thomas Baechler <thomas@archlinux.org>
 # Contributor: James Rayner <iphitus@gmail.com>
 # Contributor: Vasiliy Stelmachenok <ventureo@yandex.ru>
+# Contributor: Peter Jung <ptr1337@archlinux.org>
 
 pkgbase=nvidia-utils
-pkgname=('nvidia-utils' 'opencl-nvidia' 'nvidia-dkms')
+pkgname=('nvidia-utils' 'opencl-nvidia' 'nvidia-dkms' 'nvidia-open-dkms')
 pkgver=560.35.03
 pkgrel=6
 arch=('x86_64')
@@ -20,8 +21,11 @@ source=('nvidia-drm-outputclass.conf'
         'systemd-suspend-override.conf'
         'nvidia-sleep.conf'
         "https://us.download.nvidia.com/XFree86/Linux-x86_64/${pkgver}/${_pkg}.run"
+        "$pkgname-$pkgver.tar.gz::https://github.com/NVIDIA/open-gpu-kernel-modules/archive/refs/tags/${pkgver}.tar.gz"
         "make-modeset-fbdev-default.patch"
-        "6.11-fbdev.patch")
+        "6.11-fbdev.patch"
+        "nvidia-open-gcc-ibt-sls.patch"
+        "silence-event-assert-until-570.patch")
 sha512sums=('de7116c09f282a27920a1382df84aa86f559e537664bb30689605177ce37dc5067748acf9afd66a3269a6e323461356592fdfc624c86523bf105ff8fe47d3770'
             '4b3ad73f5076ba90fe0b3a2e712ac9cde76f469cd8070280f960c3ce7dc502d1927f525ae18d008075c8f08ea432f7be0a6c3a7a6b49c361126dcf42f97ec499'
             'f8f071f5a46c1a5ce5188e104b017808d752e61c0c20de1466feb5d693c0b55a5586314411e78cc2ab9c0e16e2c67afdd358da94c0c75df1f8233f54c280762c'
@@ -29,8 +33,11 @@ sha512sums=('de7116c09f282a27920a1382df84aa86f559e537664bb30689605177ce37dc50677
             '55def6319f6abb1a4ccd28a89cd60f1933d155c10ba775b8dfa60a2dc5696b4b472c14b252dc0891f956e70264be87c3d5d4271e929a4fc4b1a68a6902814cee'
             'c7fea39d11565f05a507d3aded4e9ea506ef9dbebf313e0fc8d6ebc526af3f9d6dec78af9d6c4456c056310f98911c638706bccdd9926d07f492615569430455'
             '97137160b64928ff84fd6145a0ebc209c045d6a07ccc53ec6df6ba1fda2ad72038eda7ecdc0a0178a2628aa4e18819a9b3ff3b693b22bdc9de543be0a968f8aa'
-            '73a3734aa0dd4df3cfba9dd7153f9b82981c4a4e86df0c804fb966280c02af8c39ad649bfa3d4119b82709974a40eaab67d357c586b2414c66113929a47628e9'
-            'd37aa56ed937c596340106138a80c38ef5cc703cdc270dea6189fda20bcf369b11badd662bd0c0799ec1282428ca64d3dc137289fa1951905a10fd4cba6dd9b0')
+            'a0cbe05fc8acbb4769fa5320d6bfe2033fd31775036e984278cdf7e67ebd801bd8991d4d1626884a4ff729d3900c969f385caea7ae049e3d918a1ea60e45890a'
+            '85d7f988c5d4c88f18e72c42d3fb47a99a8aec9d6b212bd6ab4f726baddc4592d029977a8e032c7082e12673cfd470b60d5bfd7cfefadb3580401b91e5a5f1aa'
+            '518a09d2244a761485e5374df48f37446abc44f0b88168b45a9ddf131bcce7b008c7a788419ffc19a36a25e386f6a5fd1c8a0da52c6021e7f5757e1b8de8f5c6'
+            '263c4c5e75ef8cb8ca2641c022dfaf8bd9222fadf68ed15120b0ae7dd9cc901a04ce2e55625d513a0995759c9d82dfbdc4c33d4751159124915d7404b1400e34'
+            '8f0d0a4881588e10681060d6006a6c65108a753c3106a1a710cf90f8dba8e52e6d6c10633f8ad19b763a2ab119ef98fddc6db4481262daf644c0206ac2ecd2d9')
 
 
 create_links() {
@@ -52,11 +59,11 @@ prepare() {
     # This avoids various issue, when Simplefb is used
     # https://gitlab.archlinux.org/archlinux/packaging/packages/nvidia-utils/-/issues/14
     # https://github.com/rpmfusion/nvidia-kmod/blob/master/make_modeset_default.patch
-    patch -Np1 < "$srcdir"/make-modeset-fbdev-default.patch
+    patch -Np1 < "$srcdir"/make-modeset-fbdev-default.patch -d "${srcdir}/${_pkg}/kernel"
 
     # Add fix for fbdev "phantom" monitor with 6.11
     # https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/issues/80
-    patch -Np1 < "$srcdir"/6.11-fbdev.patch
+    patch -Np1 < "$srcdir"/6.11-fbdev.patch -d "${srcdir}/${_pkg}/kernel"
 
     cd kernel
 
@@ -76,6 +83,52 @@ DEST_MODULE_LOCATION[4]="/kernel/drivers/video"' dkms.conf
 
     # Gift for linux-rt guys
     sed -i 's/NV_EXCLUDE_BUILD_MODULES/IGNORE_PREEMPT_RT_PRESENCE=1 NV_EXCLUDE_BUILD_MODULES/' dkms.conf
+
+    cd "$srcdir"/open-gpu-kernel-modules-${pkgver}
+    # Fix for https://bugs.archlinux.org/task/74886
+    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/nvidia-open-gcc-ibt-sls.patch
+
+    # Enable modeset and fbdev as default
+    # This avoids various issue, when Simplefb is used
+    # https://gitlab.archlinux.org/archlinux/packaging/packages/nvidia-utils/-/issues/14
+    # https://github.com/rpmfusion/nvidia-kmod/blob/master/make_modeset_default.patch
+    patch -Np1 < "$srcdir"/make-modeset-fbdev-default.patch -d "${srcdir}/open-gpu-kernel-modules-${pkgver}/kernel-open"
+
+    # Fix for https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/issues/80
+    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/6.11-fbdev.patch -d "${srcdir}/open-gpu-kernel-modules-${pkgver}/kernel-open"
+
+    # Patch by Nvidia to silence error messages until a real fix drops in 570.xx
+    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/716#issuecomment-2391898884
+    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/silence-event-assert-until-570.patch
+
+    # Attempt to make this reproducible
+    sed -i "s/^HOSTNAME.*/HOSTNAME = echo archlinux"/ utils.mk
+    sed -i "s/^WHOAMI.*/WHOAMI = echo archlinux-builder"/ utils.mk
+    sed -i "s/^DATE.*/DATE = date -r version.mk"/ utils.mk
+
+    sed -i "s/__VERSION_STRING/${pkgver}/" kernel-open/dkms.conf
+    sed -i 's/__JOBS/`nproc`/' kernel-open/dkms.conf
+    sed -i 's/__EXCLUDE_MODULES//' kernel-open/dkms.conf
+    sed -i 's/__DKMS_MODULES//' kernel-open/dkms.conf
+    sed -i '$i\
+BUILT_MODULE_NAME[0]="nvidia"\
+BUILT_MODULE_LOCATION[0]="kernel-open"\
+DEST_MODULE_LOCATION[0]="/kernel/drivers/video"\
+BUILT_MODULE_NAME[1]="nvidia-uvm"\
+BUILT_MODULE_LOCATION[1]="kernel-open"\
+DEST_MODULE_LOCATION[1]="/kernel/drivers/video"\
+BUILT_MODULE_NAME[2]="nvidia-modeset"\
+BUILT_MODULE_LOCATION[2]="kernel-open"\
+DEST_MODULE_LOCATION[2]="/kernel/drivers/video"\
+BUILT_MODULE_NAME[3]="nvidia-drm"\
+BUILT_MODULE_LOCATION[3]="kernel-open"\
+DEST_MODULE_LOCATION[3]="/kernel/drivers/video"\
+BUILT_MODULE_NAME[4]="nvidia-peermem"\
+BUILT_MODULE_LOCATION[4]="kernel-open"\
+DEST_MODULE_LOCATION[4]="/kernel/drivers/video"' kernel-open/dkms.conf
+
+    # Clean version for later copying for DKMS
+    cp -r ../open-gpu-kernel-modules-${pkgver} "$srcdir"/open-gpu-kernel-modules-dkms
 }
 
 package_opencl-nvidia() {
@@ -284,4 +337,18 @@ package_nvidia-utils() {
     install -Dm644 "${srcdir}/nvidia-sleep.conf" "${pkgdir}/usr/lib/modprobe.d/nvidia-sleep.conf"
 
     create_links
+}
+
+package_nvidia-open-dkms() {
+  depends+=('dkms')
+  license=('MIT AND GPL-2.0-only')
+  conflicts=('nvidia-open' 'NVIDIA-MODULE')
+  provides=('nvidia-open' 'NVIDIA-MODULE')
+
+  install -dm 755 "${pkgdir}"/usr/src
+  # cp -dr --no-preserve='ownership' kernel-open "${pkgdir}/usr/src/nvidia-$pkgver"
+  cp -dr --no-preserve='ownership' open-gpu-kernel-modules-dkms "${pkgdir}/usr/src/nvidia-$pkgver"
+  mv "${pkgdir}/usr/src/nvidia-$pkgver/kernel-open/dkms.conf" "${pkgdir}/usr/src/nvidia-$pkgver/dkms.conf"
+
+  install -Dm644 open-gpu-kernel-modules-${pkgver}/COPYING "$pkgdir"/usr/share/licenses/$pkgname
 }
