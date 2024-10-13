@@ -7,7 +7,7 @@
 pkgbase=nvidia-utils
 pkgname=('nvidia-utils' 'opencl-nvidia' 'nvidia-dkms' 'nvidia-open-dkms')
 pkgver=560.35.03
-pkgrel=8
+pkgrel=9
 arch=('x86_64')
 url="http://www.nvidia.com/"
 license=('custom')
@@ -149,7 +149,7 @@ package_opencl-nvidia() {
 }
 
 package_nvidia-dkms() {
-    pkgdesc="NVIDIA drivers - module sources"
+    pkgdesc="NVIDIA kernel modules - module sources"
     depends=('dkms' "nvidia-utils=$pkgver" 'libglvnd')
     provides=('NVIDIA-MODULE' 'nvidia')
     conflicts=('NVIDIA-MODULE' 'nvidia')
@@ -340,6 +340,7 @@ package_nvidia-utils() {
 }
 
 package_nvidia-open-dkms() {
+  pkgdesc="NVIDIA open kernel modules - module sources"
   depends+=('dkms')
   license=('MIT AND GPL-2.0-only')
   conflicts=('nvidia-open' 'NVIDIA-MODULE')
