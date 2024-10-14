@@ -25,7 +25,8 @@ source=('nvidia-drm-outputclass.conf'
         "make-modeset-fbdev-default.patch"
         "6.11-fbdev.patch"
         "nvidia-open-gcc-ibt-sls.patch"
-        "silence-event-assert-until-570.patch")
+        "silence-event-assert-until-570.patch"
+        "fix-hdmi-names.patch")
 sha512sums=('de7116c09f282a27920a1382df84aa86f559e537664bb30689605177ce37dc5067748acf9afd66a3269a6e323461356592fdfc624c86523bf105ff8fe47d3770'
             '4b3ad73f5076ba90fe0b3a2e712ac9cde76f469cd8070280f960c3ce7dc502d1927f525ae18d008075c8f08ea432f7be0a6c3a7a6b49c361126dcf42f97ec499'
             'f8f071f5a46c1a5ce5188e104b017808d752e61c0c20de1466feb5d693c0b55a5586314411e78cc2ab9c0e16e2c67afdd358da94c0c75df1f8233f54c280762c'
@@ -37,7 +38,8 @@ sha512sums=('de7116c09f282a27920a1382df84aa86f559e537664bb30689605177ce37dc50677
             '85d7f988c5d4c88f18e72c42d3fb47a99a8aec9d6b212bd6ab4f726baddc4592d029977a8e032c7082e12673cfd470b60d5bfd7cfefadb3580401b91e5a5f1aa'
             '518a09d2244a761485e5374df48f37446abc44f0b88168b45a9ddf131bcce7b008c7a788419ffc19a36a25e386f6a5fd1c8a0da52c6021e7f5757e1b8de8f5c6'
             '263c4c5e75ef8cb8ca2641c022dfaf8bd9222fadf68ed15120b0ae7dd9cc901a04ce2e55625d513a0995759c9d82dfbdc4c33d4751159124915d7404b1400e34'
-            '8f0d0a4881588e10681060d6006a6c65108a753c3106a1a710cf90f8dba8e52e6d6c10633f8ad19b763a2ab119ef98fddc6db4481262daf644c0206ac2ecd2d9')
+            '8f0d0a4881588e10681060d6006a6c65108a753c3106a1a710cf90f8dba8e52e6d6c10633f8ad19b763a2ab119ef98fddc6db4481262daf644c0206ac2ecd2d9'
+            '5486baa4e2dda655df14395fb58c68fa466fc561bbfb09bb9f17e198fb1ebcfd695c2e871406f9a013fcdce6c685a1dbe9755716d2739990c2d9fe0471ff048b')
 
 
 create_links() {
@@ -100,6 +102,11 @@ DEST_MODULE_LOCATION[4]="/kernel/drivers/video"' dkms.conf
     # Patch by Nvidia to silence error messages until a real fix drops in 570.xx
     # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/716#issuecomment-2391898884
     patch -Np1 --no-backup-if-mismatch -i "$srcdir"/silence-event-assert-until-570.patch
+
+    # Patch by Nvidia to fix HDMI names which are otherwise broken in the /proc/asound/NVidia/* ELD files
+    # Should hopefully ship with 570.xx
+    # https://github.com/NVIDIA/open-gpu-kernel-modules/pull/715
+    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/fix-hdmi-names.patch
 
     # Attempt to make this reproducible
     sed -i "s/^HOSTNAME.*/HOSTNAME = echo archlinux"/ utils.mk
