@@ -7,7 +7,7 @@
 pkgbase=nvidia-utils
 pkgname=('nvidia-utils' 'opencl-nvidia' 'nvidia-dkms' 'nvidia-open-dkms')
 pkgver=560.35.03
-pkgrel=14
+pkgrel=15
 arch=('x86_64')
 url="http://www.nvidia.com/"
 license=('custom')
@@ -39,7 +39,7 @@ sha512sums=('de7116c09f282a27920a1382df84aa86f559e537664bb30689605177ce37dc50677
             '518a09d2244a761485e5374df48f37446abc44f0b88168b45a9ddf131bcce7b008c7a788419ffc19a36a25e386f6a5fd1c8a0da52c6021e7f5757e1b8de8f5c6'
             '263c4c5e75ef8cb8ca2641c022dfaf8bd9222fadf68ed15120b0ae7dd9cc901a04ce2e55625d513a0995759c9d82dfbdc4c33d4751159124915d7404b1400e34'
             '8f0d0a4881588e10681060d6006a6c65108a753c3106a1a710cf90f8dba8e52e6d6c10633f8ad19b763a2ab119ef98fddc6db4481262daf644c0206ac2ecd2d9'
-            '5486baa4e2dda655df14395fb58c68fa466fc561bbfb09bb9f17e198fb1ebcfd695c2e871406f9a013fcdce6c685a1dbe9755716d2739990c2d9fe0471ff048b')
+            'f424e218eea785a457a9f45d80a639c3a707676cd6b1a608e6c3745d94beefb3d9200a0c37a5c22bdd36cf955f48e9628d0e4f9b47a0631c1898b8c5116c6c41')
 
 
 create_links() {
