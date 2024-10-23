@@ -297,7 +297,8 @@ package_nvidia-utils() {
     install -Dm644 nvidia-cuda-mps-control.1.gz "${pkgdir}/usr/share/man/man1/nvidia-cuda-mps-control.1.gz"
 
     # nvidia-modprobe
-    install -Dm755 nvidia-modprobe "${pkgdir}/usr/bin/nvidia-modprobe"
+    # This should be removed if nvidia fixed their uvm module!
+    install -Dm4755 nvidia-modprobe "${pkgdir}/usr/bin/nvidia-modprobe"
     install -Dm644 nvidia-modprobe.1.gz "${pkgdir}/usr/share/man/man1/nvidia-modprobe.1.gz"
 
     # nvidia-persistenced
