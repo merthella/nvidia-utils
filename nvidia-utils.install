@@ -21,6 +21,6 @@ post_upgrade() {
   fi
 }
 
-post_remove() {
+pre_remove() {
   systemctl disable nvidia-resume nvidia-hibernate nvidia-suspend
 }
