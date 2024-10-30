@@ -6,8 +6,8 @@
 
 pkgbase=nvidia-utils
 pkgname=('nvidia-utils' 'opencl-nvidia' 'nvidia-dkms' 'nvidia-open-dkms')
-pkgver=560.35.03
-pkgrel=19
+pkgver=565.57.01
+pkgrel=1
 arch=('x86_64')
 url="http://www.nvidia.com/"
 license=('custom')
@@ -23,7 +23,6 @@ source=('nvidia-drm-outputclass.conf'
         "https://us.download.nvidia.com/XFree86/Linux-x86_64/${pkgver}/${_pkg}.run"
         "$pkgname-$pkgver.tar.gz::https://github.com/NVIDIA/open-gpu-kernel-modules/archive/refs/tags/${pkgver}.tar.gz"
         "make-modeset-fbdev-default.patch"
-        "6.11-fbdev.patch"
         "nvidia-open-gcc-ibt-sls.patch"
         "silence-event-assert-until-570.patch"
         "fix-hdmi-names.patch")
@@ -33,10 +32,9 @@ sha512sums=('de7116c09f282a27920a1382df84aa86f559e537664bb30689605177ce37dc50677
             'a0183adce78e40853edf7e6b73867e7a8ea5dabac8e8164e42781f64d5232fbe869f850ab0697c3718ebced5cde760d0e807c05da50a982071dfe1157c31d6b8'
             '55def6319f6abb1a4ccd28a89cd60f1933d155c10ba775b8dfa60a2dc5696b4b472c14b252dc0891f956e70264be87c3d5d4271e929a4fc4b1a68a6902814cee'
             'c7fea39d11565f05a507d3aded4e9ea506ef9dbebf313e0fc8d6ebc526af3f9d6dec78af9d6c4456c056310f98911c638706bccdd9926d07f492615569430455'
-            '97137160b64928ff84fd6145a0ebc209c045d6a07ccc53ec6df6ba1fda2ad72038eda7ecdc0a0178a2628aa4e18819a9b3ff3b693b22bdc9de543be0a968f8aa'
-            'a0cbe05fc8acbb4769fa5320d6bfe2033fd31775036e984278cdf7e67ebd801bd8991d4d1626884a4ff729d3900c969f385caea7ae049e3d918a1ea60e45890a'
-            '85d7f988c5d4c88f18e72c42d3fb47a99a8aec9d6b212bd6ab4f726baddc4592d029977a8e032c7082e12673cfd470b60d5bfd7cfefadb3580401b91e5a5f1aa'
-            '518a09d2244a761485e5374df48f37446abc44f0b88168b45a9ddf131bcce7b008c7a788419ffc19a36a25e386f6a5fd1c8a0da52c6021e7f5757e1b8de8f5c6'
+            '8f5c0f06e13cf84042c9ad1d628ef3fd5aaffb116f1716b099e6ededb125e973a4a2c511bb6201e3a39d7710b2850c3418bdbeac792036b7524c5a5fc8746f52'
+            '193755b00a5baa4b879b8b190c70c46ed3d48e6cee9b10e81218f85b3ab00cad7f38559f217d297e2478296e3fbc780d7ae47019ff9549ee1b55c15b52db744a'
+            'ca65143749f209c553ca5ba1a585d235d54840735958bd0d44b44a77263bbe5a1b9fb8e7e1d79425928d29b2e6af3437bf0d1cc16d3901aa4201b4f1430870cc'
             '263c4c5e75ef8cb8ca2641c022dfaf8bd9222fadf68ed15120b0ae7dd9cc901a04ce2e55625d513a0995759c9d82dfbdc4c33d4751159124915d7404b1400e34'
             '8f0d0a4881588e10681060d6006a6c65108a753c3106a1a710cf90f8dba8e52e6d6c10633f8ad19b763a2ab119ef98fddc6db4481262daf644c0206ac2ecd2d9'
             'f424e218eea785a457a9f45d80a639c3a707676cd6b1a608e6c3745d94beefb3d9200a0c37a5c22bdd36cf955f48e9628d0e4f9b47a0631c1898b8c5116c6c41')
@@ -63,9 +61,6 @@ prepare() {
     # https://github.com/rpmfusion/nvidia-kmod/blob/master/make_modeset_default.patch
     patch -Np1 < "$srcdir"/make-modeset-fbdev-default.patch -d "${srcdir}/${_pkg}/kernel"
 
-    # Add fix for fbdev "phantom" monitor with 6.11
-    # https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/issues/80
-    patch -Np1 < "$srcdir"/6.11-fbdev.patch -d "${srcdir}/${_pkg}/kernel"
 
     cd kernel
 
@@ -95,9 +90,6 @@ DEST_MODULE_LOCATION[4]="/kernel/drivers/video"' dkms.conf
     # https://gitlab.archlinux.org/archlinux/packaging/packages/nvidia-utils/-/issues/14
     # https://github.com/rpmfusion/nvidia-kmod/blob/master/make_modeset_default.patch
     patch -Np1 < "$srcdir"/make-modeset-fbdev-default.patch -d "${srcdir}/open-gpu-kernel-modules-${pkgver}/kernel-open"
-
-    # Fix for https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/issues/80
-    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/6.11-fbdev.patch -d "${srcdir}/open-gpu-kernel-modules-${pkgver}/kernel-open"
 
     # Patch by Nvidia to silence error messages until a real fix drops in 570.xx
     # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/716#issuecomment-2391898884
@@ -193,8 +185,8 @@ package_nvidia-utils() {
     install -Dm755 nvidia_drv.so "${pkgdir}/usr/lib/xorg/modules/drivers/nvidia_drv.so"
 
     # Xorg
-    install -D -m755 libnvidia-egl-xcb.so.1  -t "${pkgdir}/usr/lib"
-    install -D -m755 libnvidia-egl-xlib.so.1 -t "${pkgdir}/usr/lib"
+    install -D -m755 libnvidia-egl-xcb.so.1.0.0  -t "${pkgdir}/usr/lib"
+    install -D -m755 libnvidia-egl-xlib.so.1.0.0 -t "${pkgdir}/usr/lib"
     install -D -m644 20_nvidia_xcb.json  -t "${pkgdir}/usr/share/egl/egl_external_platform.d"
     install -D -m644 20_nvidia_xlib.json -t "${pkgdir}/usr/share/egl/egl_external_platform.d"
 
@@ -279,6 +271,9 @@ package_nvidia-utils() {
     ls *openssl*
     install -Dm755 "libnvidia-pkcs11.so.${pkgver}" "${pkgdir}/usr/lib/libnvidia-pkcs11.so.${pkgver}"
     install -Dm755 "libnvidia-pkcs11-openssl3.so.${pkgver}" "${pkgdir}/usr/lib/libnvidia-pkcs11-openssl3.so.${pkgver}"
+
+    # Sandboxhelper
+    install -Dm755 "libnvidia-sandboxutils.so.${pkgver}" "${pkgdir}/usr/lib/libnvidia-sandboxutils.so.${pkgver}"
 
     # Debug
     install -Dm755 nvidia-debugdump "${pkgdir}/usr/bin/nvidia-debugdump"
