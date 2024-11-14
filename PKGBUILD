@@ -25,7 +25,8 @@ source=('nvidia-drm-outputclass.conf'
         "make-modeset-fbdev-default.patch"
         "nvidia-open-gcc-ibt-sls.patch"
         "silence-event-assert-until-570.patch"
-        "fix-hdmi-names.patch")
+        "fix-hdmi-names.patch"
+        "nvidia-drm-Set-FOP_UNSIGNED_OFFSET-for-nv_drm_fops.f.patch")
 sha512sums=('de7116c09f282a27920a1382df84aa86f559e537664bb30689605177ce37dc5067748acf9afd66a3269a6e323461356592fdfc624c86523bf105ff8fe47d3770'
             '4b3ad73f5076ba90fe0b3a2e712ac9cde76f469cd8070280f960c3ce7dc502d1927f525ae18d008075c8f08ea432f7be0a6c3a7a6b49c361126dcf42f97ec499'
             'f8f071f5a46c1a5ce5188e104b017808d752e61c0c20de1466feb5d693c0b55a5586314411e78cc2ab9c0e16e2c67afdd358da94c0c75df1f8233f54c280762c'
@@ -37,7 +38,8 @@ sha512sums=('de7116c09f282a27920a1382df84aa86f559e537664bb30689605177ce37dc50677
             'ca65143749f209c553ca5ba1a585d235d54840735958bd0d44b44a77263bbe5a1b9fb8e7e1d79425928d29b2e6af3437bf0d1cc16d3901aa4201b4f1430870cc'
             '263c4c5e75ef8cb8ca2641c022dfaf8bd9222fadf68ed15120b0ae7dd9cc901a04ce2e55625d513a0995759c9d82dfbdc4c33d4751159124915d7404b1400e34'
             '8f0d0a4881588e10681060d6006a6c65108a753c3106a1a710cf90f8dba8e52e6d6c10633f8ad19b763a2ab119ef98fddc6db4481262daf644c0206ac2ecd2d9'
-            'f424e218eea785a457a9f45d80a639c3a707676cd6b1a608e6c3745d94beefb3d9200a0c37a5c22bdd36cf955f48e9628d0e4f9b47a0631c1898b8c5116c6c41')
+            '5486baa4e2dda655df14395fb58c68fa466fc561bbfb09bb9f17e198fb1ebcfd695c2e871406f9a013fcdce6c685a1dbe9755716d2739990c2d9fe0471ff048b'
+            '65ee42612a775699a6a4d842e7a42de0adff360c64ab3917aaf3ade1c9034851d2a245e0659e5016fb7c87fc4b97aa777a17c3dd7dc9a8856055bf7c0d641e15')
 
 
 create_links() {
@@ -60,6 +62,10 @@ prepare() {
     # https://gitlab.archlinux.org/archlinux/packaging/packages/nvidia-utils/-/issues/14
     # https://github.com/rpmfusion/nvidia-kmod/blob/master/make_modeset_default.patch
     patch -Np1 < "$srcdir"/make-modeset-fbdev-default.patch -d "${srcdir}/${_pkg}/kernel"
+
+    # Patch by NVIDIA to fix the 6.12 Kernel opening the display
+    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/712
+    patch -Np1 < "$srcdir"/nvidia-drm-Set-FOP_UNSIGNED_OFFSET-for-nv_drm_fops.f.patch -d "${srcdir}/${_pkg}/kernel"
 
 
     cd kernel
@@ -99,6 +105,10 @@ DEST_MODULE_LOCATION[4]="/kernel/drivers/video"' dkms.conf
     # Should hopefully ship with 570.xx
     # https://github.com/NVIDIA/open-gpu-kernel-modules/pull/715
     patch -Np1 --no-backup-if-mismatch -i "$srcdir"/fix-hdmi-names.patch
+
+    # Patch by NVIDIA to fix the 6.12 Kernel opening the display
+    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/712
+    patch -Np1 < "$srcdir"/nvidia-drm-Set-FOP_UNSIGNED_OFFSET-for-nv_drm_fops.f.patch -d "${srcdir}/open-gpu-kernel-modules-${pkgver}/kernel-open"
 
     # Attempt to make this reproducible
     sed -i "s/^HOSTNAME.*/HOSTNAME = echo archlinux"/ utils.mk
