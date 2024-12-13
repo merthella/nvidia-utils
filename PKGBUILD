@@ -165,7 +165,7 @@ package_nvidia-dkms() {
 
 package_nvidia-utils() {
     pkgdesc="NVIDIA drivers utilities"
-    depends=('libglvnd' 'egl-wayland' 'egl-gbm')
+    depends=('libglvnd' 'egl-wayland' 'egl-gbm' 'egl-x11')
     optdepends=('nvidia-settings: configuration tool'
                 'xorg-server: Xorg support'
                 'xorg-server-devel: nvidia-xconfig'
@@ -182,12 +182,6 @@ package_nvidia-utils() {
 
     # X driver
     install -Dm755 nvidia_drv.so "${pkgdir}/usr/lib/xorg/modules/drivers/nvidia_drv.so"
-
-    # Xorg
-    install -D -m755 libnvidia-egl-xcb.so.1.0.0  -t "${pkgdir}/usr/lib"
-    install -D -m755 libnvidia-egl-xlib.so.1.0.0 -t "${pkgdir}/usr/lib"
-    install -D -m644 20_nvidia_xcb.json  -t "${pkgdir}/usr/share/egl/egl_external_platform.d"
-    install -D -m644 20_nvidia_xlib.json -t "${pkgdir}/usr/share/egl/egl_external_platform.d"
 
     # Wayland/GBM
     mkdir -p "${pkgdir}/usr/lib/gbm"
