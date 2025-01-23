@@ -25,7 +25,12 @@ source=('nvidia-drm-outputclass.conf'
         "make-modeset-fbdev-default.patch"
         "nvidia-open-gcc-ibt-sls.patch"
         "silence-event-assert-until-570.patch"
-        "fix-hdmi-names.patch")
+        "fix-hdmi-names.patch"
+        "crypto-Add-fix-for-6.13-Module-compilation.patch"
+        "nvidia-nv-Convert-symbol-namespace-to-string-literal.patch"
+        "Kbuild-Use-absolute-paths-for-symbolic-links.patch"
+        "FROM-AOSC-Use-linux-aperture.c-for-removing-conflict.patch"
+        "FROM-AOSC-TTM-fbdev-emulation-for-Linux-6.13.patch")
 sha512sums=('de7116c09f282a27920a1382df84aa86f559e537664bb30689605177ce37dc5067748acf9afd66a3269a6e323461356592fdfc624c86523bf105ff8fe47d3770'
             '1bcf2c6ee71686c0d32625e746ec8c0f7cf42fc63c76c3076ff2526b2661e8b9e9f76eaa2c4b213c7cc437a6f06006cc07672c4974d7f4515b2de2fd7c47a891'
             'f8f071f5a46c1a5ce5188e104b017808d752e61c0c20de1466feb5d693c0b55a5586314411e78cc2ab9c0e16e2c67afdd358da94c0c75df1f8233f54c280762c'
@@ -37,7 +42,12 @@ sha512sums=('de7116c09f282a27920a1382df84aa86f559e537664bb30689605177ce37dc50677
             'ca65143749f209c553ca5ba1a585d235d54840735958bd0d44b44a77263bbe5a1b9fb8e7e1d79425928d29b2e6af3437bf0d1cc16d3901aa4201b4f1430870cc'
             '263c4c5e75ef8cb8ca2641c022dfaf8bd9222fadf68ed15120b0ae7dd9cc901a04ce2e55625d513a0995759c9d82dfbdc4c33d4751159124915d7404b1400e34'
             '8f0d0a4881588e10681060d6006a6c65108a753c3106a1a710cf90f8dba8e52e6d6c10633f8ad19b763a2ab119ef98fddc6db4481262daf644c0206ac2ecd2d9'
-            '5486baa4e2dda655df14395fb58c68fa466fc561bbfb09bb9f17e198fb1ebcfd695c2e871406f9a013fcdce6c685a1dbe9755716d2739990c2d9fe0471ff048b')
+            '5486baa4e2dda655df14395fb58c68fa466fc561bbfb09bb9f17e198fb1ebcfd695c2e871406f9a013fcdce6c685a1dbe9755716d2739990c2d9fe0471ff048b'
+            'f1e1a6e8dcaa96c350920291f1c1e99380122c070ff70b0fd609efcc006272a68c01bd814c775749ba717b5a8418b6794cbe9d10ff2ba76ba1210127af463873'
+            '5e773822e6c2536efa279b069449ffd7cc486e9d3dc18432b729a10e2c56f8ec4429586094ee5ca835ea0eba76387d5f5e1cd1bba31ec7aea00358709abe6a95'
+            '69cf2d7abe0be5f7312f3dbee0c1943d776980580da058311d6b775a8cbad373e8cd5717e238d19c52b34120f74b8cf2f55c22209892fc880fd46053d4b0ed9f'
+            'a2b0126b9576b9d15503fb012dc95e32616fc18bfc4d3c2d57659cd9b184fc7dc7c148d7118f3c11a727ec37a94475ce612c0c1c3956a2d11c08a936dabdef84'
+            '3ee460f9b0a05803cfd3f3f32b022e468880ee882b924c324397bd881b97d79d6f29ebfd1b2bee646e7f186f1bd8fbedd3eca54bab45ab000ad63dab076f2dbf')
 
 
 create_links() {
@@ -60,6 +70,15 @@ prepare() {
     # https://gitlab.archlinux.org/archlinux/packaging/packages/nvidia-utils/-/issues/14
     # https://github.com/rpmfusion/nvidia-kmod/blob/master/make_modeset_default.patch
     patch -Np1 < "$srcdir"/make-modeset-fbdev-default.patch -d "${srcdir}/${_pkg}/kernel"
+
+    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/747
+    patch -Np2 -i "$srcdir"/Kbuild-Use-absolute-paths-for-symbolic-links.patch -d "${srcdir}/${_pkg}/kernel"
+
+    # Fixes fbdev on 6.13+
+    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/749
+    # https://gist.github.com/xtexChooser/da92d9df902788b75f746f348552ae80
+    patch -Np2 -i "$srcdir"/FROM-AOSC-Use-linux-aperture.c-for-removing-conflict.patch -d "${srcdir}/${_pkg}/kernel"
+    patch -Np2 -i "$srcdir"/FROM-AOSC-TTM-fbdev-emulation-for-Linux-6.13.patch -d "${srcdir}/${_pkg}/kernel"
 
     cd kernel
 
@@ -98,6 +117,22 @@ DEST_MODULE_LOCATION[4]="/kernel/drivers/video"' dkms.conf
     # Should hopefully ship with 570.xx
     # https://github.com/NVIDIA/open-gpu-kernel-modules/pull/715
     patch -Np1 --no-backup-if-mismatch -i "$srcdir"/fix-hdmi-names.patch
+
+    # Fix build errors on 6.13+
+    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/746
+    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/crypto-Add-fix-for-6.13-Module-compilation.patch
+
+    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/751
+    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/nvidia-nv-Convert-symbol-namespace-to-string-literal.patch
+
+    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/747
+    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/Kbuild-Use-absolute-paths-for-symbolic-links.patch
+
+    # Fixes fbdev on 6.13+
+    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/749
+    # https://gist.github.com/xtexChooser/da92d9df902788b75f746f348552ae80
+    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/FROM-AOSC-Use-linux-aperture.c-for-removing-conflict.patch
+    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/FROM-AOSC-TTM-fbdev-emulation-for-Linux-6.13.patch
 
     # Attempt to make this reproducible
     sed -i "s/^HOSTNAME.*/HOSTNAME = echo archlinux"/ utils.mk
