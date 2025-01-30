@@ -6,8 +6,8 @@
 
 pkgbase=nvidia-utils
 pkgname=('nvidia-utils' 'opencl-nvidia' 'nvidia-dkms' 'nvidia-open-dkms')
-pkgver=565.77
-pkgrel=4
+pkgver=570.86.16
+pkgrel=1
 arch=('x86_64')
 url="http://www.nvidia.com/"
 license=('custom')
@@ -22,32 +22,19 @@ source=('nvidia-drm-outputclass.conf'
         'nvidia-sleep.conf'
         "https://us.download.nvidia.com/XFree86/Linux-x86_64/${pkgver}/${_pkg}.run"
         "$pkgname-$pkgver.tar.gz::https://github.com/NVIDIA/open-gpu-kernel-modules/archive/refs/tags/${pkgver}.tar.gz"
-        "make-modeset-fbdev-default.patch"
-        "nvidia-open-gcc-ibt-sls.patch"
-        "silence-event-assert-until-570.patch"
-        "fix-hdmi-names.patch"
-        "crypto-Add-fix-for-6.13-Module-compilation.patch"
-        "nvidia-nv-Convert-symbol-namespace-to-string-literal.patch"
-        "Kbuild-Use-absolute-paths-for-symbolic-links.patch"
-        "FROM-AOSC-Use-linux-aperture.c-for-removing-conflict.patch"
-        "FROM-AOSC-TTM-fbdev-emulation-for-Linux-6.13.patch")
+        0001-Enable-atomic-kernel-modesetting-by-default.patch
+        0003-Add-IBT-support.patch)
+
 sha512sums=('de7116c09f282a27920a1382df84aa86f559e537664bb30689605177ce37dc5067748acf9afd66a3269a6e323461356592fdfc624c86523bf105ff8fe47d3770'
             '1bcf2c6ee71686c0d32625e746ec8c0f7cf42fc63c76c3076ff2526b2661e8b9e9f76eaa2c4b213c7cc437a6f06006cc07672c4974d7f4515b2de2fd7c47a891'
             'f8f071f5a46c1a5ce5188e104b017808d752e61c0c20de1466feb5d693c0b55a5586314411e78cc2ab9c0e16e2c67afdd358da94c0c75df1f8233f54c280762c'
             'a0183adce78e40853edf7e6b73867e7a8ea5dabac8e8164e42781f64d5232fbe869f850ab0697c3718ebced5cde760d0e807c05da50a982071dfe1157c31d6b8'
             '55def6319f6abb1a4ccd28a89cd60f1933d155c10ba775b8dfa60a2dc5696b4b472c14b252dc0891f956e70264be87c3d5d4271e929a4fc4b1a68a6902814cee'
-            'c7fea39d11565f05a507d3aded4e9ea506ef9dbebf313e0fc8d6ebc526af3f9d6dec78af9d6c4456c056310f98911c638706bccdd9926d07f492615569430455'
-            '62a85223b1cbc00b65113235642a4a39eb8e78e085845e4c7d12abf916ea2c1d86030849040bba118ba6af56a1d0da073d4a96791674fc18d7154e55a3587b63'
-            '11c9434fcd1d749fe3b71f00d5126c51bd3efd3f8305d89da5137e06f1cf5dc8eeba4e494d9f4a1f19c31a1ffbe0187062549cb7ea26b5579493bf282a50ad73'
-            'ca65143749f209c553ca5ba1a585d235d54840735958bd0d44b44a77263bbe5a1b9fb8e7e1d79425928d29b2e6af3437bf0d1cc16d3901aa4201b4f1430870cc'
-            '263c4c5e75ef8cb8ca2641c022dfaf8bd9222fadf68ed15120b0ae7dd9cc901a04ce2e55625d513a0995759c9d82dfbdc4c33d4751159124915d7404b1400e34'
-            '8f0d0a4881588e10681060d6006a6c65108a753c3106a1a710cf90f8dba8e52e6d6c10633f8ad19b763a2ab119ef98fddc6db4481262daf644c0206ac2ecd2d9'
-            '5486baa4e2dda655df14395fb58c68fa466fc561bbfb09bb9f17e198fb1ebcfd695c2e871406f9a013fcdce6c685a1dbe9755716d2739990c2d9fe0471ff048b'
-            'f1e1a6e8dcaa96c350920291f1c1e99380122c070ff70b0fd609efcc006272a68c01bd814c775749ba717b5a8418b6794cbe9d10ff2ba76ba1210127af463873'
-            '5e773822e6c2536efa279b069449ffd7cc486e9d3dc18432b729a10e2c56f8ec4429586094ee5ca835ea0eba76387d5f5e1cd1bba31ec7aea00358709abe6a95'
-            '69cf2d7abe0be5f7312f3dbee0c1943d776980580da058311d6b775a8cbad373e8cd5717e238d19c52b34120f74b8cf2f55c22209892fc880fd46053d4b0ed9f'
-            'a2b0126b9576b9d15503fb012dc95e32616fc18bfc4d3c2d57659cd9b184fc7dc7c148d7118f3c11a727ec37a94475ce612c0c1c3956a2d11c08a936dabdef84'
-            '3ee460f9b0a05803cfd3f3f32b022e468880ee882b924c324397bd881b97d79d6f29ebfd1b2bee646e7f186f1bd8fbedd3eca54bab45ab000ad63dab076f2dbf')
+            '0958b99c0e5181db1b5fe542a87b4fdc91a9dbaed1193d173f4a0e67c31bf0b0e012abcece33e9c547446b9614a894546197e42edc6c7f3c5d2e7318ac5221ae'
+            '415adf4609f093e8703dd6f2c03bc5cbd84270c694e67bb0ee72897ac18dddb0d8aaf8baaf47e8624a79c54a1f794126a3ddb10fae91784f05f1f32ba063b985'
+            'c2e637497828f9441cdc4a94037c79da001e040cdaad5efd6001e34ee872eda1245e8fb6310f79fc9f4bfe363c61d1becec124a9a171731b2ccdfcc43a735abb'
+            '0bb89b9037f0baa9aae1ff8e70c9c93896f03fd0cc380eea4b0dc094a6991c3ad6738c9fbbaa42d8b5a544f77dc91c0e6401b1501c5970c576d5efbc0de8dd34'
+            '42f621179d4fd9bf608f0d84b9019f5a5fdf5d92d68d22ce9b9a9add1cad1c90dcb3764db68e0b9bc7e902bb6b955c59563ea6d4f39f2e39a340387e4d5deb82')
 
 
 create_links() {
@@ -65,20 +52,11 @@ prepare() {
     cd "${_pkg}"
     bsdtar -xf nvidia-persistenced-init.tar.bz2
 
-    # Enable modeset and fbdev as default
+    # Enable modeset by default
     # This avoids various issue, when Simplefb is used
     # https://gitlab.archlinux.org/archlinux/packaging/packages/nvidia-utils/-/issues/14
     # https://github.com/rpmfusion/nvidia-kmod/blob/master/make_modeset_default.patch
-    patch -Np1 < "$srcdir"/make-modeset-fbdev-default.patch -d "${srcdir}/${_pkg}/kernel"
-
-    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/747
-    patch -Np2 -i "$srcdir"/Kbuild-Use-absolute-paths-for-symbolic-links.patch -d "${srcdir}/${_pkg}/kernel"
-
-    # Fixes fbdev on 6.13+
-    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/749
-    # https://gist.github.com/xtexChooser/da92d9df902788b75f746f348552ae80
-    patch -Np2 -i "$srcdir"/FROM-AOSC-Use-linux-aperture.c-for-removing-conflict.patch -d "${srcdir}/${_pkg}/kernel"
-    patch -Np2 -i "$srcdir"/FROM-AOSC-TTM-fbdev-emulation-for-Linux-6.13.patch -d "${srcdir}/${_pkg}/kernel"
+    patch -Np1 < "$srcdir"/0001-Enable-atomic-kernel-modesetting-by-default.patch -d "${srcdir}/${_pkg}/kernel"
 
     cd kernel
 
@@ -100,39 +78,15 @@ DEST_MODULE_LOCATION[4]="/kernel/drivers/video"' dkms.conf
     sed -i 's/NV_EXCLUDE_BUILD_MODULES/IGNORE_PREEMPT_RT_PRESENCE=1 NV_EXCLUDE_BUILD_MODULES/' dkms.conf
 
     cd "$srcdir"/open-gpu-kernel-modules-${pkgver}
-    # Fix for https://bugs.archlinux.org/task/74886
-    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/nvidia-open-gcc-ibt-sls.patch
 
     # Enable modeset and fbdev as default
     # This avoids various issue, when Simplefb is used
     # https://gitlab.archlinux.org/archlinux/packaging/packages/nvidia-utils/-/issues/14
     # https://github.com/rpmfusion/nvidia-kmod/blob/master/make_modeset_default.patch
-    patch -Np1 < "$srcdir"/make-modeset-fbdev-default.patch -d "${srcdir}/open-gpu-kernel-modules-${pkgver}/kernel-open"
+    patch -Np1 < "$srcdir"/0001-Enable-atomic-kernel-modesetting-by-default.patch -d "${srcdir}/open-gpu-kernel-modules-${pkgver}/kernel-open"
 
-    # Patch by Nvidia to silence error messages until a real fix drops in 570.xx
-    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/716#issuecomment-2391898884
-    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/silence-event-assert-until-570.patch
-
-    # Patch by Nvidia to fix HDMI names which are otherwise broken in the /proc/asound/NVidia/* ELD files
-    # Should hopefully ship with 570.xx
-    # https://github.com/NVIDIA/open-gpu-kernel-modules/pull/715
-    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/fix-hdmi-names.patch
-
-    # Fix build errors on 6.13+
-    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/746
-    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/crypto-Add-fix-for-6.13-Module-compilation.patch
-
-    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/751
-    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/nvidia-nv-Convert-symbol-namespace-to-string-literal.patch
-
-    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/747
-    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/Kbuild-Use-absolute-paths-for-symbolic-links.patch
-
-    # Fixes fbdev on 6.13+
-    # https://github.com/NVIDIA/open-gpu-kernel-modules/issues/749
-    # https://gist.github.com/xtexChooser/da92d9df902788b75f746f348552ae80
-    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/FROM-AOSC-Use-linux-aperture.c-for-removing-conflict.patch
-    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/FROM-AOSC-TTM-fbdev-emulation-for-Linux-6.13.patch
+    # Fix for https://bugs.archlinux.org/task/74886
+    patch -Np1 --no-backup-if-mismatch -i "$srcdir"/0003-Add-IBT-support.patch
 
     # Attempt to make this reproducible
     sed -i "s/^HOSTNAME.*/HOSTNAME = echo archlinux"/ utils.mk
@@ -290,6 +244,7 @@ package_nvidia-utils() {
     install -Dm755 "libnvidia-ngx.so.${pkgver}" "${pkgdir}/usr/lib/libnvidia-ngx.so.${pkgver}"
     install -Dm755 _nvngx.dll "${pkgdir}/usr/lib/nvidia/wine/_nvngx.dll"
     install -Dm755 nvngx.dll "${pkgdir}/usr/lib/nvidia/wine/nvngx.dll"
+    install -Dm755 nvngx_dlssg.dll "${pkgdir}/usr/lib/nvidia/wine/nvngx_dlssg.dll"
 
     # Optical flow
     install -Dm755 "libnvidia-opticalflow.so.${pkgver}" "${pkgdir}/usr/lib/libnvidia-opticalflow.so.${pkgver}"
