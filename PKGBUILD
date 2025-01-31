@@ -324,6 +324,9 @@ package_nvidia-utils() {
     # Fixes Wayland Sleep, when restoring the session
     install -Dm644 "${srcdir}/nvidia-sleep.conf" "${pkgdir}/usr/lib/modprobe.d/nvidia-sleep.conf"
 
+    # Lists NVIDIA driver files for container runtimes like nvidia-container-toolkit
+    install -Dm644 sandboxutils-filelist.json "${pkgdir}/usr/share/nvidia/files.d/sandboxutils-filelist.json"
+
     create_links
 }
 
