@@ -21,7 +21,7 @@ source=('nvidia-drm-outputclass.conf'
         'systemd-suspend-override.conf'
         'nvidia-sleep.conf'
         "https://us.download.nvidia.com/XFree86/Linux-x86_64/${pkgver}/${_pkg}.run"
-        "$pkgname-$pkgver.tar.gz::https://github.com/merthella/open-gpu-kernel-modules/archive/refs/tags/Latest.tar.gz"
+        "$pkgname-$pkgver.tar.gz::https://github.com/merthella/open-gpu-kernel-modules/archive/refs/tags/${pkgver}.tar.gz"
         0001-Enable-atomic-kernel-modesetting-by-default.patch
         0003-Add-IBT-support.patch)
 
