@@ -5,7 +5,7 @@
 # Contributor: Thomas Baechler <thomas@archlinux.org>
 
 pkgbase=nvidia-utils
-pkgname=('nvidia-utils' 'opencl-nvidia' 'nvidia-dkms' 'nvidia-open-dkms')
+pkgname=('nvidia-utils' 'opencl-nvidia' 'nvidia-open-dkms')  # "nvidia-dkms" yerine "nvidia-open-dkms" kullan
 pkgver=570.124.04
 pkgrel=1
 arch=('x86_64')
